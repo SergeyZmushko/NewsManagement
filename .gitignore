@@ -7,4 +7,9 @@
 /module-repository/out/
 /module-service/build/
 /module-web/build/
-/build/
+build/
+.gitignore
+gradlew.bat
+gradlew
+
+
