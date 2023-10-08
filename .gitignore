@@ -1,0 +1,10 @@
+/.gradle/
+/.idea/
+/gradle/
+/module-main/build/
+/module-main/out/
+/module-repository/build/
+/module-repository/out/
+/module-service/build/
+/module-web/build/
+/build/
