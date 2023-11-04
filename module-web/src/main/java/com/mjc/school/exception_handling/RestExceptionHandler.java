@@ -1,9 +1,6 @@
 package com.mjc.school.exception_handling;
 
-import com.mjc.school.service.exceptions.NotFoundException;
-import com.mjc.school.service.exceptions.ResourceConflictServiceException;
-import com.mjc.school.service.exceptions.ServiceException;
-import com.mjc.school.service.exceptions.ValidatorException;
+import com.mjc.school.service.exceptions.*;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +17,11 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(value = ApiVersionNotSupportedException.class)
     protected ResponseEntity<ErrorResponse> handleApiVersionNotSupportedException(ApiVersionNotSupportedException exc) {
         return buildErrorResponse(API_VERSION_NOT_SUPPORTED.getErrorCode(), API_VERSION_NOT_SUPPORTED.getMessage(), exc.getMessage(), HttpStatus.SERVICE_UNAVAILABLE);
+    }
+
+    @ExceptionHandler(value = EmailOrUserNameExistException.class)
+    protected ResponseEntity<ErrorResponse> handleEmailOrUserNameException(EmailOrUserNameExistException e){
+        return buildErrorResponse("000010", "some message", e.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(value = ValidatorException.class)

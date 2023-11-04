@@ -1,12 +1,22 @@
 spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          github:
+            client-id: a556e86bfc085f46db44
+            client-secret: e940d843bcd6b6d0d6b64960385c6e98614dbc3d
   datasource:
     url: jdbc:postgresql://localhost:5432/news
     username: postgres
     password: admin
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: update
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQL82Dialect
         show_sql: true
+  mvc:
+    path match:
+      matching-strategy: ant_path_matcher

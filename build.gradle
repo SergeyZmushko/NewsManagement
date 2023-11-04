@@ -40,18 +40,17 @@ subprojects {
         implementation "org.springframework.boot:spring-boot-starter-data-jpa:2.7.7"
         implementation "org.glassfish.jaxb:jaxb-runtime:2.3.2"
         implementation group: 'org.sonarsource.sonarqube', name: 'sonarqube', version: '7.0'
-        implementation group: 'mysql', name: 'mysql-connector-java', version: '8.0.28'
         implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: '2.7.7'
         implementation group: 'javax.validation', name: 'validation-api', version: '2.0.1.Final'
         implementation group: 'org.hibernate', name: 'hibernate-validator', version: '8.0.1.Final'
         implementation group: 'org.postgresql', name: 'postgresql', version: '42.6.0'
+        implementation group: 'org.springframework.boot', name: 'spring-boot-starter-security', version: '2.7.7'
 
         testImplementation "org.springframework:spring-test:$springVersion"
         testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: '2.7.7'
         testImplementation "org.junit.jupiter:junit-jupiter-api:$jupiterVersion"
         testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$jupiterVersion"
         testImplementation "com.tngtech.archunit:archunit-junit5:1.0.0"
-        testImplementation group: 'com.h2database', name: 'h2', version: '2.2.220'
         testImplementation "org.testcontainers:postgresql:1.19.0"
         testImplementation group: 'org.assertj', name: 'assertj-core', version: '3.24.2'
 
