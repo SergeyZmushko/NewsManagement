@@ -4,6 +4,7 @@ import com.mjc.school.repository.exception.EntityConflictRepositoryException;
 import com.mjc.school.repository.filter.pagination.Page;
 import com.mjc.school.repository.implementation.AuthorRepository;
 import com.mjc.school.repository.model.impl.AuthorModel;
+import com.mjc.school.repository.repoV2Implementation.AuthorRepositoryNew;
 import com.mjc.school.service.BaseService;
 import com.mjc.school.service.dto.AuthorDtoRequest;
 import com.mjc.school.service.dto.AuthorDtoResponse;
@@ -19,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.awt.print.Pageable;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,16 +29,29 @@ import static com.mjc.school.service.exceptions.ServiceErrorCode.*;
 @Service
 public class AuthorService implements
         BaseService<AuthorDtoRequest, AuthorDtoResponse, Long, ResourceSearchFilterRequestDTO, AuthorDtoRequest> {
+
+    private final AuthorRepositoryNew authorRepositoryNew;
     private final AuthorRepository authorRepository;
     private final AuthorModelMapper mapper;
     private final AuthorSearchFilterMapper authorSearchFilterMapper;
 
     @Autowired
     public AuthorService(AuthorRepository authorRepository,
-                         AuthorModelMapper authorModelMapper, AuthorSearchFilterMapper authorSearchFilterMapper) {
+                         AuthorModelMapper authorModelMapper, AuthorSearchFilterMapper authorSearchFilterMapper, AuthorRepositoryNew authorRepositoryNew) {
         this.authorRepository = authorRepository;
         this.mapper = authorModelMapper;
         this.authorSearchFilterMapper = authorSearchFilterMapper;
+        this.authorRepositoryNew = authorRepositoryNew;
+    }
+
+    @Transactional(readOnly = true)
+    public AuthorDtoResponse readById1(Long authorId){
+        Optional<AuthorModel> authorModel = authorRepositoryNew.findById(authorId);
+        if (authorModel.isPresent()){
+            return mapper.modelToDto(authorModel.get());
+        } else {
+            throw new NotFoundException(String.format(String.valueOf(AUTHOR_ID_DOES_NOT_EXIST.getMessage()), authorId));
+        }
     }
 
     @Override

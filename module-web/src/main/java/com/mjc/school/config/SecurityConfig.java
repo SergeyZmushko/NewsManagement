@@ -8,16 +8,14 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.oauth2.client.registration.ClientRegistration;
-import org.springframework.security.oauth2.core.AuthorizationGrantType;
-import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -32,10 +30,14 @@ public class SecurityConfig  {
     private final UserDetailsService userDetailsService;
     private final JwtAuthFilter jwtAuthFilter;
 
+    private final AuthenticationEntryPoint authenticationEntryPoint;
+
     @Autowired
-    public SecurityConfig(UserDetailsService userDetailsService, JwtAuthFilter jwtAuthFilter){
+    public SecurityConfig(UserDetailsService userDetailsService, JwtAuthFilter jwtAuthFilter,
+                          AuthenticationEntryPoint authenticationEntryPoint){
         this.userDetailsService = userDetailsService;
         this.jwtAuthFilter = jwtAuthFilter;
+        this.authenticationEntryPoint = authenticationEntryPoint;
     }
 
 
@@ -65,14 +67,15 @@ public class SecurityConfig  {
                 .antMatchers(HttpMethod.POST, BASE_URL + "**").hasRole("ADMIN")
                 .antMatchers(HttpMethod.PATCH, BASE_URL + "**").hasRole("ADMIN")
                 .antMatchers(HttpMethod.DELETE, BASE_URL + "**").hasRole("ADMIN")
-
                 .anyRequest().authenticated()
+                .and()
 
-                .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and().oauth2Login(oauth2 -> oauth2
-                        .loginPage(BASE_URL + "auth/signin")
-                )
-                .addFilterAfter(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+//                .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .oauth2Login(Customizer.withDefaults())
+                .addFilterAfter(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+                .logout(l ->
+                        l.logoutSuccessUrl("/api/v1/news").permitAll());
+//                .exceptionHandling().authenticationEntryPoint(authenticationEntryPoint);
 
         return http.build();
     }
@@ -92,20 +95,20 @@ public class SecurityConfig  {
         return expressionHandler;
     }
 
-    private ClientRegistration getGoogleClientRegistration() {
-        return ClientRegistration.withRegistrationId("gitHub")
-                .clientId("YOUR_CLIENT_ID")
-                .clientSecret("YOUR_CLIENT_SECRET")
-                .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
-                .redirectUri("{baseUrl}/login/oauth2/code/{registrationId}")
-                .clientAuthenticationMethod(ClientAuthenticationMethod.BASIC)
-                .scope("email", "profile")
-                .authorizationUri("https://accounts.google.com/o/oauth2/auth")
-                .tokenUri("https://accounts.google.com/o/oauth2/token")
-                .userInfoUri("https://www.googleapis.com/oauth2/v3/userinfo")
-                .userNameAttributeName("sub")
-                .clientName("GitHub")
-                .build();
-    }
+//    private ClientRegistration githubClientRegistration() {
+//        return ClientRegistration.withRegistrationId("gitHub")
+//                .clientId("YOUR_CLIENT_ID")
+//                .clientSecret("YOUR_CLIENT_SECRET")
+//                .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
+//                .redirectUri("{baseUrl}/login/oauth2/code/{registrationId}")
+//                .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
+//                .scope("email", "profile")
+//                .authorizationUri("https://accounts.google.com/o/oauth2/auth")
+//                .tokenUri("https://accounts.google.com/o/oauth2/token")
+//                .userInfoUri("https://www.googleapis.com/oauth2/v3/userinfo")
+//                .userNameAttributeName("sub")
+//                .clientName("GitHub")
+//                .build();
+//    }
 
 }

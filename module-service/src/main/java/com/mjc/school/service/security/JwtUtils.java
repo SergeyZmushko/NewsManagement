@@ -5,12 +5,10 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
-
 
 import java.security.Key;
 import java.util.Date;
@@ -24,19 +22,7 @@ public class JwtUtils {
     private String jwtSecret = "5367566B59703373367639792F423F4528482B4D6251655468576D5A71347437";
     private final int jwtExpirationMs = 3600 * 1000;
 
-//    public String generateToken(Authentication authentication) {
-//        Map<String, Object> claim = new HashMap<>();
-//        Claims claims = Jwts.claims().setSubject(authentication.getName());
-//        String authorities = authentication.getAuthorities().stream()
-//                .map(GrantedAuthority::getAuthority)
-//                .collect(Collectors.joining(","));
-//
-//
-//        return createToken(claims, authentication.getName());
-//    }
-
     public String generateToken(Authentication authentication){
-
         String authorities = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining(","));

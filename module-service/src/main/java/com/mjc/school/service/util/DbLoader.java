@@ -1,23 +1,31 @@
-package util;
+package com.mjc.school.service.util;
 
+import com.mjc.school.repository.implementation.NewsRepository;
 import com.mjc.school.repository.model.impl.AuthorModel;
 import com.mjc.school.repository.model.impl.Comment;
 import com.mjc.school.repository.model.impl.NewsModel;
 import com.mjc.school.repository.model.impl.TagModel;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
+import javax.transaction.Transactional;
 import java.util.*;
-
+@Component
 public class DbLoader {
-    @PersistenceContext
-    EntityManager entityManager;
+
+    private final NewsRepository newsRepository;
     private static final String AUTHORS_FILE_NAME = "authors";
     private static final String CONTENT_FILE_NAME = "content";
     private static final String COMMENTS_FILE_NAME = "comments";
     private static final String NEWS_FILE_NAME = "news";
     private static final String TAGS_FILE_NAME = "tags";
 
+    @Autowired
+    public DbLoader(NewsRepository newsRepository){
+        this.newsRepository = newsRepository;
+    }
+
+    @Transactional
     public void loadData() {
         List<String> authors = DataReader.readData(AUTHORS_FILE_NAME);
         List<String> tags = DataReader.readData(TAGS_FILE_NAME);
@@ -64,7 +72,7 @@ public class DbLoader {
             newsModel.setTitle(titles.get(rnd.nextInt(titles.size())));
             newsModel.setContent(content.get(rnd.nextInt(content.size())));
             newsModel.setAuthorModel(authorModels.get(rnd.nextInt(authorModels.size())));
-            entityManager.persist(newsModel);
+            newsRepository.create(newsModel);
         }
     }
 }

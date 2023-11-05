@@ -4,8 +4,15 @@ spring:
       client:
         registration:
           github:
-            client-id: a556e86bfc085f46db44
-            client-secret: e940d843bcd6b6d0d6b64960385c6e98614dbc3d
+            client-id: 781e629cfd181f1d40ef
+            client-secret: 012020226d34032450ddca369b023fd2c5754cfd
+          google:
+            client-id: 781e629cfd181f1d40ef
+            client-secret: 012020226d34032450ddca369b023fd2c5754cfd
+      resource-server:
+        jwt:
+          issuer-uri: http://localhost:8083/auth/realms/baeldung
+          jwk-set-uri: http://localhost:8083/auth/realms/baeldung/protocol/openid-connect/certs
   datasource:
     url: jdbc:postgresql://localhost:5432/news
     username: postgres
@@ -20,3 +27,5 @@ spring:
   mvc:
     path match:
       matching-strategy: ant_path_matcher
+server:
+  port: 8081
