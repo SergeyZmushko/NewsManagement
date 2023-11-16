@@ -1,62 +1,62 @@
 package com.mjc.school.service.implementation;
 
 import com.mjc.school.repository.exception.EntityConflictRepositoryException;
-import com.mjc.school.repository.filter.pagination.Page;
-import com.mjc.school.repository.implementation.AuthorRepository;
 import com.mjc.school.repository.model.impl.AuthorModel;
+import com.mjc.school.repository.interfaces.AuthorRepository;
 import com.mjc.school.service.BaseService;
 import com.mjc.school.service.dto.AuthorDtoRequest;
 import com.mjc.school.service.dto.AuthorDtoResponse;
 import com.mjc.school.service.dto.PageDtoResponse;
-import com.mjc.school.service.dto.ResourceSearchFilterRequestDTO;
 import com.mjc.school.service.exceptions.NotFoundException;
 import com.mjc.school.service.exceptions.ResourceConflictServiceException;
-import com.mjc.school.service.filter.ResourceSearchFilter;
-import com.mjc.school.service.filter.mapper.AuthorSearchFilterMapper;
 import com.mjc.school.service.interfaces.AuthorModelMapper;
 import com.mjc.school.service.validator.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Optional;
 
 import static com.mjc.school.service.exceptions.ServiceErrorCode.*;
 
 @Service
 public class AuthorService implements
-        BaseService<AuthorDtoRequest, AuthorDtoResponse, Long, ResourceSearchFilterRequestDTO, AuthorDtoRequest> {
+        BaseService<AuthorDtoRequest, AuthorDtoResponse, Long, Integer, AuthorDtoRequest> {
+
     private final AuthorRepository authorRepository;
     private final AuthorModelMapper mapper;
-    private final AuthorSearchFilterMapper authorSearchFilterMapper;
 
     @Autowired
-    public AuthorService(AuthorRepository authorRepository,
-                         AuthorModelMapper authorModelMapper, AuthorSearchFilterMapper authorSearchFilterMapper) {
-        this.authorRepository = authorRepository;
+    public AuthorService(AuthorModelMapper authorModelMapper,
+                         AuthorRepository authorRepository) {
         this.mapper = authorModelMapper;
-        this.authorSearchFilterMapper = authorSearchFilterMapper;
+        this.authorRepository = authorRepository;
     }
 
     @Override
     @Transactional(readOnly = true)
-    public PageDtoResponse<AuthorDtoResponse> readAll(@Valid ResourceSearchFilterRequestDTO searchFilterRequest) {
-        final ResourceSearchFilter searchFilter = authorSearchFilterMapper.map(searchFilterRequest);
-        final Page<AuthorModel> page = authorRepository.readAll(getEntitySearchSpecification(searchFilter));
-        final List<AuthorDtoResponse> modelDtoList = mapper.authorListToDtoList(page.entities());
-        return new PageDtoResponse<>(modelDtoList, page.currentPage(), page.pageCount());
+    public PageDtoResponse<AuthorDtoResponse> readAll(Integer pageNo, Integer pageSize, String sort) {
+
+        String[] sortParams = sort.split(":");
+        Sort.Direction direction = sortParams[1].equalsIgnoreCase("ASC") ? Sort.Direction.ASC : Sort.Direction.DESC;
+        PageRequest pageRequest = PageRequest.of(pageNo, pageSize, Sort.by(direction, sortParams[0]));
+
+        Page<AuthorModel> page = authorRepository.findAll(pageRequest);
+        Page<AuthorDtoResponse> result = mapper.authorPageToDtoPage(page);
+        return new PageDtoResponse<>(result.getContent(), result.getPageable().getPageNumber(), result.getTotalPages());
     }
 
     @Override
     @Transactional(readOnly = true)
     public AuthorDtoResponse readById(Long authorId) {
-        Optional<AuthorModel> authorModel = authorRepository.readById(authorId);
+        Optional<AuthorModel> authorModel = authorRepository.findById(authorId);
         if (authorModel.isPresent()) {
             return mapper.modelToDto(authorModel.get());
         } else {
-            throw new NotFoundException(
-                    String.format(String.valueOf(AUTHOR_ID_DOES_NOT_EXIST.getMessage()), authorId));
+            throw new NotFoundException(String.format(String.valueOf(AUTHOR_ID_DOES_NOT_EXIST.getMessage()), authorId));
         }
     }
 
@@ -65,7 +65,7 @@ public class AuthorService implements
     public AuthorDtoResponse create(@Valid AuthorDtoRequest createAuthorRequest) {
         try {
             AuthorModel model = mapper.dtoToModel(createAuthorRequest);
-            model = authorRepository.create(model);
+            model = authorRepository.save(model);
             return mapper.modelToDto(model);
         } catch (EntityConflictRepositoryException ex) {
             throw new ResourceConflictServiceException(AUTHOR_CONFLICT.getMessage(), AUTHOR_CONFLICT.getErrorCode(), ex.getMessage());
@@ -75,11 +75,12 @@ public class AuthorService implements
     @Override
     @Transactional
     public AuthorDtoResponse update(Long id, @Valid AuthorDtoRequest updateAuthorRequest) {
-        if (authorRepository.existById(id)) {
+        if (authorRepository.existsById(id)) {
+            AuthorModel updateModel = authorRepository.findById(id).get();
             AuthorModel model = mapper.dtoToModel(updateAuthorRequest);
-            model.setId(id);
-            model = authorRepository.update(model);
-            return mapper.modelToDto(model);
+            updateModel.setId(id);
+            updateModel.setName(model.getName());
+            return mapper.modelToDto(authorRepository.save(updateModel));
         } else {
             throw new NotFoundException(String.format(AUTHOR_ID_DOES_NOT_EXIST.getMessage(), id));
         }
@@ -88,7 +89,7 @@ public class AuthorService implements
     @Override
     @Transactional
     public void deleteById(Long id) {
-        if (authorRepository.existById(id)) {
+        if (authorRepository.existsById(id)) {
             authorRepository.deleteById(id);
         } else {
             throw new NotFoundException(String.format(AUTHOR_ID_DOES_NOT_EXIST.getMessage(), id));

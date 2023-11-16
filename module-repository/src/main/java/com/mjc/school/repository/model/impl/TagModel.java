@@ -1,7 +1,6 @@
 package com.mjc.school.repository.model.impl;
 
 import com.mjc.school.repository.model.BaseEntity;
-
 import javax.persistence.*;
 import java.util.List;
 

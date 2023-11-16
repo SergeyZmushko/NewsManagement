@@ -27,10 +27,10 @@ public class NewsModel implements BaseEntity<Long> {
     @Column(name = "last_update_date")
     @LastModifiedDate
     private LocalDateTime lastUpdateDate;
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "author_id")
     private AuthorModel authorModel;
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinTable(
             name = "news_tag",
             joinColumns = @JoinColumn(name = "news_id"),
@@ -38,7 +38,7 @@ public class NewsModel implements BaseEntity<Long> {
     )
     private List<TagModel> tagModels;
 
-    @OneToMany(mappedBy = "newsModel", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "newsModel", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Comment> comments;
 
     public List<Comment> getComments() {

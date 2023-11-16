@@ -1,10 +1,10 @@
 package com.mjc.school.controller.impl;
 
 import com.mjc.school.controller.BaseController;
-import com.mjc.school.service.BaseService;
 import com.mjc.school.service.dto.*;
 import com.mjc.school.service.implementation.AuthorService;
 import com.mjc.school.service.implementation.CommentService;
+import com.mjc.school.service.implementation.NewsService;
 import com.mjc.school.service.implementation.TagService;
 import com.mjc.school.versioning.ApiVersion;
 import io.swagger.annotations.Api;
@@ -24,16 +24,16 @@ import java.util.List;
 @RestController
 @RequestMapping(value = NEWS_API_ROOT_PATH, produces = MediaType.APPLICATION_JSON_VALUE)
 @Api(produces = "application/json", value = "Operations for creating, updating, retrieving and deleting news in the application")
-public class NewsController implements BaseController<CreateNewsDtoRequest, NewsDtoResponse, Long, ResourceSearchFilterRequestDTO, UpdateNewsDtoRequest> {
+public class NewsController implements BaseController<CreateNewsDtoRequest, NewsDtoResponse, Long, Integer, UpdateNewsDtoRequest> {
 
-    private final BaseService<CreateNewsDtoRequest, NewsDtoResponse, Long, ResourceSearchFilterRequestDTO, UpdateNewsDtoRequest> newsService;
+    private final NewsService newsService;
     private final TagService tagService;
     private final AuthorService authorService;
     private final CommentService commentService;
 
     @Autowired
-    public NewsController(BaseService<CreateNewsDtoRequest, NewsDtoResponse, Long, ResourceSearchFilterRequestDTO, UpdateNewsDtoRequest> newsService,
-                          TagService tagService, AuthorService authorService, CommentService commentService){
+    public NewsController(NewsService newsService, TagService tagService,
+                          AuthorService authorService, CommentService commentService){
         this.newsService = newsService;
         this.tagService = tagService;
         this.authorService = authorService;
@@ -49,8 +49,10 @@ public class NewsController implements BaseController<CreateNewsDtoRequest, News
             @ApiResponse(code = 404, message = "The resource you were trying to reach is not found"),
             @ApiResponse(code = 500, message = "Application failed to process the request")
     })
-    public PageDtoResponse<NewsDtoResponse> readAll(final ResourceSearchFilterRequestDTO searchRequest) {
-        return newsService.readAll(searchRequest);
+    public PageDtoResponse<NewsDtoResponse> readAll(@RequestParam (defaultValue = "0") Integer pageNo,
+                                                    @RequestParam(defaultValue = "10") Integer pageSize,
+                                                    @RequestParam (defaultValue = "title:asc") String sort) {
+        return newsService.readAll(pageNo, pageSize, sort);
     }
     @Override
     @GetMapping("/{id}")

@@ -1,21 +1,18 @@
 package com.mjc.school.service.implementation;
 
 import com.mjc.school.repository.exception.EntityConflictRepositoryException;
-import com.mjc.school.repository.filter.pagination.Page;
-import com.mjc.school.repository.implementation.TagRepository;
 import com.mjc.school.repository.model.impl.TagModel;
+import com.mjc.school.repository.interfaces.TagRepository;
 import com.mjc.school.service.BaseService;
-import com.mjc.school.service.dto.PageDtoResponse;
-import com.mjc.school.service.dto.ResourceSearchFilterRequestDTO;
-import com.mjc.school.service.dto.TagDtoRequest;
-import com.mjc.school.service.dto.TagDtoResponse;
+import com.mjc.school.service.dto.*;
 import com.mjc.school.service.exceptions.NotFoundException;
 import com.mjc.school.service.exceptions.ResourceConflictServiceException;
-import com.mjc.school.service.filter.ResourceSearchFilter;
-import com.mjc.school.service.filter.mapper.TagSearchFilterMapper;
 import com.mjc.school.service.interfaces.TagModelMapper;
 import com.mjc.school.service.validator.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,32 +24,33 @@ import static com.mjc.school.service.exceptions.ServiceErrorCode.TAG_ID_DOES_NOT
 
 @Service
 public class TagService implements
-        BaseService<TagDtoRequest, TagDtoResponse, Long, ResourceSearchFilterRequestDTO, TagDtoRequest> {
+        BaseService<TagDtoRequest, TagDtoResponse, Long, Integer, TagDtoRequest> {
 
     private final TagRepository tagRepository;
     private final TagModelMapper mapper;
-    private final TagSearchFilterMapper tagSearchFilterMapper;
 
     @Autowired
-    public TagService(TagRepository tagRepository, TagModelMapper tagModelMapper, TagSearchFilterMapper tagSearchFilterMapper) {
+    public TagService(TagRepository tagRepository, TagModelMapper tagModelMapper) {
         this.tagRepository = tagRepository;
         this.mapper = tagModelMapper;
-        this.tagSearchFilterMapper = tagSearchFilterMapper;
     }
 
     @Override
     @Transactional(readOnly = true)
-    public PageDtoResponse<TagDtoResponse> readAll(@Valid ResourceSearchFilterRequestDTO searchFilterRequest) {
-        final ResourceSearchFilter searchFilter = tagSearchFilterMapper.map(searchFilterRequest);
-        final Page<TagModel> page = tagRepository.readAll(getEntitySearchSpecification(searchFilter));
-        final List<TagDtoResponse> modelDtoList = mapper.modelListToDtoList(page.entities());
-        return new PageDtoResponse<>(modelDtoList, page.currentPage(), page.pageCount());
+    public PageDtoResponse<TagDtoResponse> readAll(Integer pageNo, Integer pageSize, String sort) {
+        String[] sortParams = sort.split(":");
+        Sort.Direction direction = sortParams[1].equalsIgnoreCase("ASC") ? Sort.Direction.ASC : Sort.Direction.DESC;
+        PageRequest pageRequest = PageRequest.of(pageNo, pageSize, Sort.by(direction, sortParams[0]));
+
+        Page<TagModel> page = tagRepository.findAll(pageRequest);
+        Page<TagDtoResponse> result = mapper.tagPageToDtoPage(page);
+        return new PageDtoResponse<>(result.getContent(), result.getPageable().getPageNumber(), result.getTotalPages());
     }
 
     @Override
     @Transactional(readOnly = true)
     public TagDtoResponse readById(Long id) {
-        Optional<TagModel> result = tagRepository.readById(id);
+        Optional<TagModel> result = tagRepository.findById(id);
         return mapper.modelToDto(result.orElseThrow(() -> new NotFoundException(
                 String.format(String.valueOf(TAG_ID_DOES_NOT_EXIST.getMessage()), id))));
     }
@@ -62,7 +60,7 @@ public class TagService implements
     public TagDtoResponse create(@Valid TagDtoRequest createRequest) {
         try {
             TagModel model = mapper.dtoToModel(createRequest);
-            model = tagRepository.create(model);
+            model = tagRepository.save(model);
             return mapper.modelToDto(model);
         } catch (EntityConflictRepositoryException ex) {
             throw new ResourceConflictServiceException(TAG_CONFLICT.getMessage(), TAG_CONFLICT.getErrorCode(), ex.getMessage());
@@ -72,10 +70,10 @@ public class TagService implements
     @Override
     @Transactional
     public TagDtoResponse update(Long id, @Valid TagDtoRequest updateRequest) {
-        if (tagRepository.existById(id)) {
-            TagModel model = mapper.dtoToModel(updateRequest);
-            model.setId(id);
-            model = tagRepository.update(model);
+        if (tagRepository.existsById(id)) {
+            TagModel model = tagRepository.findById(id).get();
+            model.setName(updateRequest.name());
+            model = tagRepository.save(model);
             return mapper.modelToDto(model);
         } else {
             throw new NotFoundException(String.format(TAG_ID_DOES_NOT_EXIST.getMessage(), id));
@@ -85,7 +83,7 @@ public class TagService implements
     @Override
     @Transactional
     public void deleteById(Long id) {
-        if (tagRepository.existById(id)) {
+        if (tagRepository.existsById(id)) {
             tagRepository.deleteById(id);
         } else {
             throw new NotFoundException(String.format(TAG_ID_DOES_NOT_EXIST.getMessage(), id));
@@ -94,6 +92,6 @@ public class TagService implements
 
     @Transactional(readOnly = true)
     public List<TagDtoResponse> readByNewsId(Long newsId) {
-        return mapper.modelListToDtoList(tagRepository.readByNewsId(newsId));
+        return mapper.modelListToDtoList(tagRepository.findByNewsModelsId(newsId));
     }
 }

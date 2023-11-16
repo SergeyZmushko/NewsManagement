@@ -6,6 +6,7 @@ import com.mjc.school.service.dto.TagDtoResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -25,4 +26,8 @@ public interface TagModelMapper {
             @Mapping(target = "newsModels", ignore = true)
     })
     TagModel dtoToModel(TagDtoRequest dto);
+
+    default Page<TagDtoResponse> tagPageToDtoPage(Page<TagModel> page){
+        return page.map(this::modelToDto);
+    }
 }

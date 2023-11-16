@@ -1,9 +1,9 @@
 package serviceTest;
 
 import com.mjc.school.repository.exception.EntityConflictRepositoryException;
-import com.mjc.school.repository.implementation.CommentRepository;
-import com.mjc.school.repository.implementation.NewsRepository;
 import com.mjc.school.repository.model.impl.Comment;
+import com.mjc.school.repository.interfaces.CommentRepository;
+import com.mjc.school.repository.interfaces.NewsRepository;
 import com.mjc.school.service.dto.CommentDtoRequest;
 import com.mjc.school.service.dto.CommentDtoResponse;
 import com.mjc.school.service.exceptions.NotFoundException;
@@ -63,7 +63,7 @@ class CommentServiceUnitTest {
 
     @Test
     void givenCommentDto_whenReadById_thenReturnCommentDtoResponse(){
-        given(commentRepository.readById(commentDtoResponse.id())).willReturn(Optional.of(comment));
+        given(commentRepository.findById(commentDtoResponse.id())).willReturn(Optional.of(comment));
         given(mapper.modelToDto(comment)).willReturn(commentDtoResponse);
 
         CommentDtoResponse commentDtoResponse1 = commentService.readById(commentDtoResponse.id());
@@ -72,17 +72,17 @@ class CommentServiceUnitTest {
 
     @Test
     void givenCommentDto_whenReadById_thenReturnNotFoundException(){
-        given(commentRepository.readById(999L)).willThrow(NotFoundException.class);
+        given(commentRepository.findById(999L)).willThrow(NotFoundException.class);
 
         Assertions.assertThrows(NotFoundException.class, () -> commentService.readById(999L));
     }
 
     @Test
     void givenComment_whenCreate_thenReturnCommentDtoResponse(){
-        given(commentRepository.create(comment)).willReturn(comment);
+        given(commentRepository.save(comment)).willReturn(comment);
         given(mapper.dtoToModel(commentDtoRequest)).willReturn(comment);
         given(mapper.modelToDto(comment)).willReturn(commentDtoResponse);
-        given(newsRepository.existById(commentDtoRequest.newsId())).willReturn(true);
+        given(newsRepository.existsById(commentDtoRequest.newsId())).willReturn(true);
         CommentDtoResponse commentDtoResponse1 = commentService.create(commentDtoRequest);
 
         assertThat(commentDtoResponse1.content()).isEqualTo("Hahahah");
@@ -91,19 +91,19 @@ class CommentServiceUnitTest {
 
     @Test
     void givenCommentDtoRequest_whenCreate_thenThrowsEntityConflictRepositoryException(){
-        given(commentRepository.create(comment)).willThrow(EntityConflictRepositoryException.class);
+        given(commentRepository.save(comment)).willThrow(EntityConflictRepositoryException.class);
         given(mapper.dtoToModel(commentDtoRequest)).willReturn(comment);
-        given(newsRepository.existById(commentDtoRequest.newsId())).willReturn(true);
+        given(newsRepository.existsById(commentDtoRequest.newsId())).willReturn(true);
         Assertions.assertThrows(ResourceConflictServiceException.class, () -> commentService.create(commentDtoRequest));
 //        verify(commentRepository, never()).create(any(commentModel.class));
     }
 
     @Test
     void givenCommentDtoRequest_whenUpdate_thenReturnCommentDtoResponse(){
-        given(commentRepository.update(comment)).willReturn(comment);
+        given(commentRepository.save(comment)).willReturn(comment);
         given(mapper.modelToDto(comment)).willReturn(commentDtoResponse);
         given(mapper.dtoToModel(commentDtoRequest)).willReturn(comment);
-        given(commentRepository.existById(2L)).willReturn(true);
+        given(commentRepository.existsById(2L)).willReturn(true);
 
         CommentDtoResponse commentDtoResponse1 = commentService.update(2L, commentDtoRequest);
         assertThat(commentDtoResponse1.content()).isEqualTo("Hahahah");
@@ -112,7 +112,7 @@ class CommentServiceUnitTest {
 
     @Test
     void given_whenUpdate_thenThrowsNotFoundException(){
-        given(commentRepository.existById(2L)).willReturn(false);
+        given(commentRepository.existsById(2L)).willReturn(false);
 
         Assertions.assertThrows(NotFoundException.class, () -> commentService.update(2L, commentDtoRequest));
     }
@@ -120,7 +120,7 @@ class CommentServiceUnitTest {
     @Test
     void givenCommentDtoRequest_whenDelete_thenReturnNothing(){
         long commentId = 1L;
-        given(commentRepository.existById(commentId)).willReturn(true);
+        given(commentRepository.existsById(commentId)).willReturn(true);
         willDoNothing().given(commentRepository).deleteById(commentId);
         commentService.deleteById(commentId);
 
@@ -130,7 +130,7 @@ class CommentServiceUnitTest {
     @Test
     void givenCommentDtoRequest_whenDelete_thenThrowsNotFoundException(){
         long commentId = 1L;
-        given(commentRepository.existById(commentId)).willReturn(false);
+        given(commentRepository.existsById(commentId)).willReturn(false);
 
         Assertions.assertThrows(NotFoundException.class, () -> commentService.deleteById(commentId));
     }
@@ -138,7 +138,7 @@ class CommentServiceUnitTest {
     @Test
     void givenComment_whenReadByNewsId_thenReturnCommentDtoResponse(){
         List<Comment> comments = List.of(comment, new Comment());
-        given(commentRepository.readCommentsByNewsId(1L)).willReturn(comments);
+        given(commentRepository.findByNewsModelId(1L)).willReturn(comments);
         given(mapper.modelListToDtoList(comments)).willReturn(List.of(commentDtoResponse, commentDtoResponse));
 
         List<CommentDtoResponse> commentDtoResponseList = commentService.readByNewsId(1L);

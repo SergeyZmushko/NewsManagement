@@ -1,12 +1,10 @@
 package com.mjc.school.exception_handling;
 
-import com.mjc.school.service.exceptions.NotFoundException;
-import com.mjc.school.service.exceptions.ResourceConflictServiceException;
-import com.mjc.school.service.exceptions.ServiceException;
-import com.mjc.school.service.exceptions.ValidatorException;
+import com.mjc.school.service.exceptions.*;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
@@ -20,6 +18,16 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(value = ApiVersionNotSupportedException.class)
     protected ResponseEntity<ErrorResponse> handleApiVersionNotSupportedException(ApiVersionNotSupportedException exc) {
         return buildErrorResponse(API_VERSION_NOT_SUPPORTED.getErrorCode(), API_VERSION_NOT_SUPPORTED.getMessage(), exc.getMessage(), HttpStatus.SERVICE_UNAVAILABLE);
+    }
+
+    @ExceptionHandler(value = UsernameNotFoundException.class)
+    protected ResponseEntity<ErrorResponse> handleUserNameNotFoundException(UsernameNotFoundException e) {
+        return buildErrorResponse(USER_NOT_FOUND.getErrorCode(), USER_NOT_FOUND.getMessage(), e.getMessage(), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(value = EmailOrUserNameExistException.class)
+    protected ResponseEntity<ErrorResponse> handleEmailOrUserNameException(EmailOrUserNameExistException e) {
+        return buildErrorResponse(USER_NOT_FOUND.getErrorCode(), USER_NOT_FOUND.getMessage(), e.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(value = ValidatorException.class)
