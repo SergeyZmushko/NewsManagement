@@ -12,10 +12,9 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -27,19 +26,12 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 public class SecurityConfig  {
 
     private static final String BASE_URL = "/api/**/";
-    private final UserDetailsService userDetailsService;
     private final JwtAuthFilter jwtAuthFilter;
 
-    private final AuthenticationEntryPoint authenticationEntryPoint;
-
     @Autowired
-    public SecurityConfig(UserDetailsService userDetailsService, JwtAuthFilter jwtAuthFilter,
-                          AuthenticationEntryPoint authenticationEntryPoint){
-        this.userDetailsService = userDetailsService;
+    public SecurityConfig(JwtAuthFilter jwtAuthFilter){
         this.jwtAuthFilter = jwtAuthFilter;
-        this.authenticationEntryPoint = authenticationEntryPoint;
     }
-
 
     @Bean
     public static PasswordEncoder passwordEncoder(){
@@ -69,13 +61,10 @@ public class SecurityConfig  {
                 .antMatchers(HttpMethod.DELETE, BASE_URL + "**").hasRole("ADMIN")
                 .anyRequest().authenticated()
                 .and()
-
-//                .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .oauth2Login(Customizer.withDefaults())
-                .addFilterAfter(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
-                .logout(l ->
-                        l.logoutSuccessUrl("/api/v1/news").permitAll());
-//                .exceptionHandling().authenticationEntryPoint(authenticationEntryPoint);
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+                .oauth2Login(Customizer.withDefaults());
 
         return http.build();
     }
@@ -94,21 +83,5 @@ public class SecurityConfig  {
         expressionHandler.setRoleHierarchy(roleHierarchy());
         return expressionHandler;
     }
-
-//    private ClientRegistration githubClientRegistration() {
-//        return ClientRegistration.withRegistrationId("gitHub")
-//                .clientId("YOUR_CLIENT_ID")
-//                .clientSecret("YOUR_CLIENT_SECRET")
-//                .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
-//                .redirectUri("{baseUrl}/login/oauth2/code/{registrationId}")
-//                .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
-//                .scope("email", "profile")
-//                .authorizationUri("https://accounts.google.com/o/oauth2/auth")
-//                .tokenUri("https://accounts.google.com/o/oauth2/token")
-//                .userInfoUri("https://www.googleapis.com/oauth2/v3/userinfo")
-//                .userNameAttributeName("sub")
-//                .clientName("GitHub")
-//                .build();
-//    }
 
 }

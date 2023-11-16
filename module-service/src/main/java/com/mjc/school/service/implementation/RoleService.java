@@ -1,55 +1,53 @@
 package com.mjc.school.service.implementation;
 
 import com.mjc.school.repository.exception.EntityConflictRepositoryException;
-import com.mjc.school.repository.implementation.RoleRepositoryImpl;
-import com.mjc.school.repository.filter.pagination.Page;
 import com.mjc.school.repository.model.impl.Role;
+import com.mjc.school.repository.interfaces.RoleRepository;
 import com.mjc.school.service.BaseService;
 import com.mjc.school.service.dto.PageDtoResponse;
-import com.mjc.school.service.dto.ResourceSearchFilterRequestDTO;
 import com.mjc.school.service.dto.RoleDto;
 import com.mjc.school.service.exceptions.NotFoundException;
 import com.mjc.school.service.exceptions.ResourceConflictServiceException;
-import com.mjc.school.service.filter.ResourceSearchFilter;
-import com.mjc.school.service.filter.mapper.RoleSearchFilterMapper;
 import com.mjc.school.service.interfaces.RoleModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Optional;
 
 import static com.mjc.school.service.exceptions.ServiceErrorCode.*;
 
 @Service
-public class RoleService implements BaseService<RoleDto, RoleDto, Long, ResourceSearchFilterRequestDTO, RoleDto> {
+public class RoleService implements BaseService<RoleDto, RoleDto, Long, Integer, RoleDto> {
 
-    private final RoleRepositoryImpl repository;
+    private final RoleRepository repository;
     private final RoleModelMapper roleModelMapper;
 
-    private final RoleSearchFilterMapper roleSearchFilterMapper;
-
     @Autowired
-    public RoleService(RoleRepositoryImpl repository, RoleModelMapper roleModelMapper, RoleSearchFilterMapper roleSearchFilterMapper){
+    public RoleService(RoleRepository repository, RoleModelMapper roleModelMapper){
         this.repository = repository;
         this.roleModelMapper = roleModelMapper;
-        this.roleSearchFilterMapper = roleSearchFilterMapper;
     }
 
     @Override
     @Transactional(readOnly = true)
-    public PageDtoResponse<RoleDto> readAll(ResourceSearchFilterRequestDTO searchFilterRequest) {
-        final ResourceSearchFilter searchFilter = roleSearchFilterMapper.map(searchFilterRequest);
-        final Page<Role> page = repository.readAll(getEntitySearchSpecification(searchFilter));
-        final List<RoleDto> modelDtoList = roleModelMapper.roleListToDtoList(page.entities());
-        return new PageDtoResponse<>(modelDtoList, page.currentPage(), page.pageCount());
+    public PageDtoResponse<RoleDto> readAll(Integer pageNo, Integer pageSize, String sort) {
+        String[] sortParams = sort.split(":");
+        Sort.Direction direction = sortParams[1].equalsIgnoreCase("ASC") ? Sort.Direction.ASC : Sort.Direction.DESC;
+        PageRequest pageRequest = PageRequest.of(pageNo, pageSize, Sort.by(direction, sortParams[0]));
+
+        Page<Role> page = repository.findAll(pageRequest);
+        Page<RoleDto> result = roleModelMapper.rolePageToDtoPage(page);
+        return new PageDtoResponse<>(result.getContent(), result.getPageable().getPageNumber(), result.getTotalPages());
     }
 
     @Override
     @Transactional(readOnly = true)
     public RoleDto readById(Long id) {
-        Optional<Role> roleModel = repository.readById(id);
+        Optional<Role> roleModel = repository.findById(id);
         if (roleModel.isPresent()) {
             return roleModelMapper.modelToDto(roleModel.get());
         } else {
@@ -63,7 +61,7 @@ public class RoleService implements BaseService<RoleDto, RoleDto, Long, Resource
     public RoleDto create(RoleDto createRequest) {
         try {
             Role model = roleModelMapper.dtoToModel(createRequest);
-            model = repository.create(model);
+            model = repository.save(model);
             return roleModelMapper.modelToDto(model);
         } catch (EntityConflictRepositoryException ex) {
             throw new ResourceConflictServiceException(ROLE_CONFLICT.getMessage(), ROLE_CONFLICT.getErrorCode(), ex.getMessage());
@@ -73,10 +71,10 @@ public class RoleService implements BaseService<RoleDto, RoleDto, Long, Resource
     @Override
     @Transactional
     public RoleDto update(Long id, RoleDto updateRequest) {
-        if (repository.existById(id)) {
-            Role model = roleModelMapper.dtoToModel(updateRequest);
-            model.setId(id);
-            model = repository.update(model);
+        if (repository.existsById(id)) {
+            Role model = repository.findById(id).get();
+            model.setName(updateRequest.name());
+            model = repository.save(model);
             return roleModelMapper.modelToDto(model);
         } else {
             throw new NotFoundException(String.format(ROLE_ID_DOES_NOT_EXIST.getMessage(), id));
@@ -86,7 +84,7 @@ public class RoleService implements BaseService<RoleDto, RoleDto, Long, Resource
     @Override
     @Transactional
     public void deleteById(Long id) {
-        if (repository.existById(id)) {
+        if (repository.existsById(id)) {
             repository.deleteById(id);
         } else {
             throw new NotFoundException(String.format(ROLE_ID_DOES_NOT_EXIST.getMessage(), id));

@@ -4,7 +4,6 @@ import com.mjc.school.service.dto.SignUpDtoRequest;
 import com.mjc.school.service.dto.UserDtoResponse;
 import com.mjc.school.service.dto.UserLoginDtoRequest;
 import com.mjc.school.service.implementation.AuthService;
-import com.mjc.school.service.implementation.UserDetailsService;
 import com.mjc.school.versioning.ApiVersion;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

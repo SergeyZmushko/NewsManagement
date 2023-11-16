@@ -35,12 +35,9 @@ public class AuthService implements com.mjc.school.service.AuthService {
     }
     @Override
     public UserDtoResponse save(SignUpDtoRequest userModel) {
-        // add check for username exists in a DB
         if(userDetailsService.existsByUserName(userModel.getUserName())){
             throw new EmailOrUserNameExistException("There is an account with that username: " + userModel.getUserName());
         }
-
-        // add check for email exists in DB
         if(userDetailsService.existsByEmail(userModel.getEmail())){
             throw new EmailOrUserNameExistException("There is an account with that email: " + userModel.getEmail());
         }

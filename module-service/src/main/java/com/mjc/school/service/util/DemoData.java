@@ -14,6 +14,6 @@ public class DemoData implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
-//        dbLoader.loadData();
+        dbLoader.saveData(1000);
     }
 }

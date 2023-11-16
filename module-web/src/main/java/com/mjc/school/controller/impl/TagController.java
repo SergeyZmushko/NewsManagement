@@ -21,7 +21,7 @@ import static com.mjc.school.controller.RestApiConst.TAG_API_ROOT_PATH;
 @RestController
 @RequestMapping(value = TAG_API_ROOT_PATH, produces = MediaType.APPLICATION_JSON_VALUE)
 @Api(produces = "application/json", value = "Operations for creating, updating, retrieving and deleting tags in the application")
-public class TagController implements BaseController<TagDtoRequest, TagDtoResponse, Long, ResourceSearchFilterRequestDTO, TagDtoRequest> {
+public class TagController implements BaseController<TagDtoRequest, TagDtoResponse, Long, Integer, TagDtoRequest> {
 
     private final TagService tagService;
 
@@ -40,8 +40,10 @@ public class TagController implements BaseController<TagDtoRequest, TagDtoRespon
             @ApiResponse(code = 404, message = "The resource you were trying to reach is not found"),
             @ApiResponse(code = 500, message = "Application failed to process the request")
     })
-    public PageDtoResponse<TagDtoResponse> readAll(final ResourceSearchFilterRequestDTO searchFilterRequest) {
-        return tagService.readAll(searchFilterRequest);
+    public PageDtoResponse<TagDtoResponse> readAll(@RequestParam (defaultValue = "0") Integer pageNo,
+                                                   @RequestParam(defaultValue = "10") Integer pageSize,
+                                                   @RequestParam (defaultValue = "name:asc") String sort) {
+        return tagService.readAll(pageNo, pageSize, sort);
     }
 
     @Override

@@ -9,6 +9,10 @@ public enum ServiceErrorCode {
     TAG_ID_DOES_NOT_EXIST(Constants.ERROR_000003, "Tag Id does not exist. Tag Id is: %s"),
     AUTHOR_DOES_NOT_EXIST_FOR_NEWS_ID(Constants.ERROR_000004, "Author not found for news with id %d."),
     COMMENT_ID_DOES_NOT_EXIST(Constants.ERROR_000005, "Comment with id %d does not exist."),
+    USER_DOES_NOT_EXIST_WITH_USERNAME_OR_EMAIL(Constants.ERROR_000010, "User not found with username %s or email: %s"),
+    USER_WITH_USERNAME_DOES_NOT_EXIST(Constants.ERROR_000009, "No user with current username: %s"),
+    USER_NOT_FOUND(Constants.ERROR_000012, "User not found"),
+    USER_WITH_EMAIL_DOES_NOT_EXIST(Constants.ERROR_000011, "No user with current email: %s"),
     VALIDATION(Constants.ERROR_000013, "Validation failed: %s"),
     RESOURCE_NOT_FOUND(Constants.ERROR_000014, "Resource not found"),
     API_VERSION_NOT_SUPPORTED(Constants.ERROR_000016, "This API version is not supported."),
@@ -50,6 +54,10 @@ public enum ServiceErrorCode {
         private static final String ERROR_000006 = "000006";
         private static final String ERROR_000007 = "000007";
         private static final String ERROR_000008 = "000008";
+        private static final String ERROR_000009 = "000009";
+        private static final String ERROR_000010 = "000010";
+        private static final String ERROR_000011 = "000011";
+        private static final String ERROR_000012 = "000012";
         private static final String ERROR_000013 = "000013";
         private static final String ERROR_000014 = "000014";
         private static final String ERROR_000016 = "000016";

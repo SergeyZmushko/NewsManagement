@@ -1,8 +1,8 @@
 package com.mjc.school.controller.impl;
 
 import com.mjc.school.controller.BaseController;
-import com.mjc.school.service.BaseService;
 import com.mjc.school.service.dto.*;
+import com.mjc.school.service.implementation.CommentService;
 import com.mjc.school.versioning.ApiVersion;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -18,11 +18,11 @@ import static com.mjc.school.controller.RestApiConst.COMMENTS_API_ROOT_PATH;
 @RestController
 @RequestMapping(value = COMMENTS_API_ROOT_PATH, produces = MediaType.APPLICATION_JSON_VALUE)
 @Api(produces = "application/json", value = "Operations for creating, updating, retrieving and deleting comments in the application")
-public class CommentController implements BaseController<CommentDtoRequest, CommentDtoResponse, Long, ResourceSearchFilterRequestDTO, CommentDtoRequest> {
+public class CommentController implements BaseController<CommentDtoRequest, CommentDtoResponse, Long, Integer, CommentDtoRequest> {
 
-    private final BaseService<CommentDtoRequest, CommentDtoResponse, Long, ResourceSearchFilterRequestDTO, CommentDtoRequest> commentService;
+    private final CommentService commentService;
     @Autowired
-    public CommentController (final BaseService<CommentDtoRequest, CommentDtoResponse, Long, ResourceSearchFilterRequestDTO, CommentDtoRequest> commentService){
+    public CommentController (final CommentService commentService){
         this.commentService = commentService;
     }
 
@@ -36,8 +36,10 @@ public class CommentController implements BaseController<CommentDtoRequest, Comm
             @ApiResponse(code = 404, message = "The resource you were trying to reach is not found"),
             @ApiResponse(code = 500, message = "Application failed to process the request")
     })
-    public PageDtoResponse<CommentDtoResponse> readAll(final ResourceSearchFilterRequestDTO searchRequest) {
-        return commentService.readAll(searchRequest);
+    public PageDtoResponse<CommentDtoResponse> readAll(@RequestParam (defaultValue = "0") Integer pageNo,
+                                                       @RequestParam(defaultValue = "10") Integer pageSize,
+                                                       @RequestParam (defaultValue = "name:asc") String sort) {
+        return commentService.readAll(pageNo, pageSize, sort);
     }
 
 
