@@ -55,7 +55,7 @@ public class AuthService implements com.mjc.school.service.AuthService {
     @Override
     public UserDtoResponse login(UserLoginDtoRequest userLoginDtoRequest) {
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-                userLoginDtoRequest.getUserNameOrEmail(), userLoginDtoRequest.getPassword()));
+                userLoginDtoRequest.getEmail(), userLoginDtoRequest.getPassword()));
         String token = jwtUtils.generateToken(authentication);
         SecurityContextHolder.getContext().setAuthentication(authentication);
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
