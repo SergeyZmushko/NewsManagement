@@ -1,7 +1,7 @@
 package com.mjc.school.service.dto;
 
 public class UserLoginDtoRequest {
-    String userNameOrEmail;
+    String email;
     String password;
 
     public String getPassword() {
@@ -12,11 +12,11 @@ public class UserLoginDtoRequest {
         this.password = password;
     }
 
-    public String getUserNameOrEmail() {
-        return userNameOrEmail;
+    public String getEmail() {
+        return email;
     }
 
-    public void setUserNameOrEmail(String userNameOrEmail) {
-        this.userNameOrEmail = userNameOrEmail;
+    public void setEmail(String email) {
+        this.email = email;
     }
 }

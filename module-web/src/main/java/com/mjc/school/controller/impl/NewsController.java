@@ -51,7 +51,7 @@ public class NewsController implements BaseController<CreateNewsDtoRequest, News
     })
     public PageDtoResponse<NewsDtoResponse> readAll(@RequestParam (defaultValue = "0") Integer pageNo,
                                                     @RequestParam(defaultValue = "10") Integer pageSize,
-                                                    @RequestParam (defaultValue = "title:asc") String sort) {
+                                                    @RequestParam (defaultValue = "id:desc") String sort) {
         return newsService.readAll(pageNo, pageSize, sort);
     }
     @Override

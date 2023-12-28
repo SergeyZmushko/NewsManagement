@@ -1,10 +1,11 @@
 package com.mjc.school.service.util;
 
+import com.mjc.school.repository.interfaces.NewsRepository;
 import com.mjc.school.repository.model.impl.AuthorModel;
 import com.mjc.school.repository.model.impl.Comment;
 import com.mjc.school.repository.model.impl.NewsModel;
 import com.mjc.school.repository.model.impl.TagModel;
-import com.mjc.school.repository.interfaces.NewsRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

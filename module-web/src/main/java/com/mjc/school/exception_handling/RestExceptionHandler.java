@@ -27,7 +27,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(value = EmailOrUserNameExistException.class)
     protected ResponseEntity<ErrorResponse> handleEmailOrUserNameException(EmailOrUserNameExistException e) {
-        return buildErrorResponse(USER_NOT_FOUND.getErrorCode(), USER_NOT_FOUND.getMessage(), e.getMessage(), HttpStatus.BAD_REQUEST);
+        return buildErrorResponse(USER_NOT_FOUND.getErrorCode(), USER_NOT_FOUND.getMessage(), e.getMessage(), HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(value = ValidatorException.class)
