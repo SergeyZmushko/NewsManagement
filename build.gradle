@@ -20,7 +20,7 @@ subprojects {
     targetCompatibility = javaVersion
 
     war {
-        baseName = 'MyApp'
+
         webAppDirName = 'src/webapp'
     }
 
