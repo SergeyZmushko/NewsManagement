@@ -15,8 +15,7 @@ import com.mjc.school.service.interfaces.NewsModelMapper;
 import com.mjc.school.service.validator.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,7 +28,7 @@ import static com.mjc.school.service.exceptions.ServiceErrorCode.*;
 
 @Service
 public class NewsService implements
-        BaseService<CreateNewsDtoRequest, NewsDtoResponse, Long, Integer, UpdateNewsDtoRequest> {
+        BaseService<CreateNewsDtoRequest, NewsDtoResponse, Long, NewsModel, UpdateNewsDtoRequest> {
     private final NewsRepository newsRepository;
     private final AuthorRepository authorRepository;
     private final TagRepository tagRepository;
@@ -47,14 +46,17 @@ public class NewsService implements
 
     @Override
     @Transactional(readOnly = true)
-    public PageDtoResponse<NewsDtoResponse> readAll(Integer pageNo, Integer pageSize, String sort) {
-        String[] sortParams = sort.split(":");
-        Sort.Direction direction = sortParams[1].equalsIgnoreCase("ASC") ? Sort.Direction.ASC : Sort.Direction.DESC;
-        PageRequest pageRequest = PageRequest.of(pageNo, pageSize, Sort.by(direction, sortParams[0]));
+    public PageDtoResponse<NewsDtoResponse> readAll(ResourceSearchFilterRequestDTO searchFilterRequestDTO, Pageable pageable) {
+        Page<NewsModel> page;
+        if (searchFilterRequestDTO != null) {
+            page = newsRepository.findAll(getSpecification(searchFilterRequestDTO), pageable);
 
-        Page<NewsModel> page = newsRepository.findAll(pageRequest);
+        } else {
+            page = newsRepository.findAll(pageable);
+        }
         Page<NewsDtoResponse> result = mapper.newsPageToDtoPage(page);
         return new PageDtoResponse<>(result.getContent(), result.getPageable().getPageNumber(), result.getTotalPages());
+
     }
 
     @Override
@@ -74,7 +76,7 @@ public class NewsService implements
             NewsModel model = mapper.dtoToModel(createRequest);
             model = newsRepository.save(model);
             return mapper.modelToDto(model);
-        }catch (EntityConflictRepositoryException ex){
+        } catch (EntityConflictRepositoryException ex) {
             throw new ResourceConflictServiceException(NEWS_CONFLICT.getMessage(), NEWS_CONFLICT.getErrorCode(), ex.getMessage());
         }
     }
@@ -94,8 +96,8 @@ public class NewsService implements
         model.setTagModels(updateRequest.tags()
                 .stream()
                 .map(tag ->
-                tagRepository.findByName(tag).orElseThrow(() ->
-                        new NotFoundException(String.format(TAG_ID_DOES_NOT_EXIST.getMessage(), tag))))
+                        tagRepository.findByName(tag).orElseThrow(() ->
+                                new NotFoundException(String.format(TAG_ID_DOES_NOT_EXIST.getMessage(), tag))))
                 .collect(Collectors.toList()));
         model.setLastUpdateDate(LocalDateTime.now());
 

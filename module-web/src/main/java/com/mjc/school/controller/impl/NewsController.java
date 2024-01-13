@@ -12,9 +12,14 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+
+import javax.annotation.Nullable;
 
 import static com.mjc.school.controller.RestApiConst.NEWS_API_ROOT_PATH;
 
@@ -24,7 +29,7 @@ import java.util.List;
 @RestController
 @RequestMapping(value = NEWS_API_ROOT_PATH, produces = MediaType.APPLICATION_JSON_VALUE)
 @Api(produces = "application/json", value = "Operations for creating, updating, retrieving and deleting news in the application")
-public class NewsController implements BaseController<CreateNewsDtoRequest, NewsDtoResponse, Long, Integer, UpdateNewsDtoRequest> {
+public class NewsController implements BaseController<CreateNewsDtoRequest, NewsDtoResponse, Long, UpdateNewsDtoRequest> {
 
     private final NewsService newsService;
     private final TagService tagService;
@@ -49,10 +54,9 @@ public class NewsController implements BaseController<CreateNewsDtoRequest, News
             @ApiResponse(code = 404, message = "The resource you were trying to reach is not found"),
             @ApiResponse(code = 500, message = "Application failed to process the request")
     })
-    public PageDtoResponse<NewsDtoResponse> readAll(@RequestParam (defaultValue = "0") Integer pageNo,
-                                                    @RequestParam(defaultValue = "10") Integer pageSize,
-                                                    @RequestParam (defaultValue = "id:desc") String sort) {
-        return newsService.readAll(pageNo, pageSize, sort);
+    public PageDtoResponse<NewsDtoResponse> readAll(@Nullable @RequestBody ResourceSearchFilterRequestDTO requestDTO,
+                                                    @PageableDefault(page = 0, size = 10, sort = "id", direction = Sort.Direction.ASC) Pageable pageable) {
+        return newsService.readAll(requestDTO, pageable);
     }
     @Override
     @GetMapping("/{id}")

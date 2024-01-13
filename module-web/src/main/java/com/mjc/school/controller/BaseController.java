@@ -1,9 +1,11 @@
 package com.mjc.school.controller;
 
 import com.mjc.school.service.dto.PageDtoResponse;
+import com.mjc.school.service.dto.ResourceSearchFilterRequestDTO;
+import org.springframework.data.domain.Pageable;
 
-public interface BaseController <C, R, G, S, U>{
-    PageDtoResponse<R> readAll(S pageNo, S pageSize, String sort);
+public interface BaseController <C, R, G, U>{
+    PageDtoResponse<R> readAll(ResourceSearchFilterRequestDTO requestDTO, Pageable pageable);
 
     R readById(G id);
 

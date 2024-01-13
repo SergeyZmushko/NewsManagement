@@ -4,6 +4,7 @@ import com.mjc.school.controller.BaseController;
 import com.mjc.school.service.dto.AuthorDtoRequest;
 import com.mjc.school.service.dto.AuthorDtoResponse;
 import com.mjc.school.service.dto.PageDtoResponse;
+import com.mjc.school.service.dto.ResourceSearchFilterRequestDTO;
 import com.mjc.school.service.implementation.AuthorService;
 import com.mjc.school.versioning.ApiVersion;
 import io.swagger.annotations.Api;
@@ -11,6 +12,9 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -22,7 +26,7 @@ import static com.mjc.school.controller.RestApiConst.AUTHOR_API_ROOT_PATH;
 @RequestMapping(value = AUTHOR_API_ROOT_PATH, produces = MediaType.APPLICATION_JSON_VALUE)
 @Api(produces = "application/json", value = "Operations for creating, updating, retrieving and deleting authors in the application")
 public class AuthorController implements
-        BaseController<AuthorDtoRequest, AuthorDtoResponse, Long, Integer, AuthorDtoRequest> {
+        BaseController<AuthorDtoRequest, AuthorDtoResponse, Long, AuthorDtoRequest> {
 
     private final AuthorService authorService;
 
@@ -42,10 +46,9 @@ public class AuthorController implements
             @ApiResponse(code = 404, message = "The resource you were trying to reach is not found"),
             @ApiResponse(code = 500, message = "Application failed to process the request")
     })
-    public PageDtoResponse<AuthorDtoResponse> readAll(@RequestParam (defaultValue = "0") Integer pageNo,
-                                                      @RequestParam(defaultValue = "10") Integer pageSize,
-                                                      @RequestParam (defaultValue = "name:asc") String sort) {
-        return authorService.readAll(pageNo, pageSize, sort);
+    public PageDtoResponse<AuthorDtoResponse> readAll(@RequestBody ResourceSearchFilterRequestDTO requestDTO,
+                                                      @PageableDefault(page = 0, size = 10, sort = "id", direction = Sort.Direction.ASC) Pageable pageable) {
+        return authorService.readAll(requestDTO, pageable);
     }
 
     @Override

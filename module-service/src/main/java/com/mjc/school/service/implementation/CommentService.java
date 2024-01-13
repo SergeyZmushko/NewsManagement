@@ -5,16 +5,13 @@ import com.mjc.school.repository.model.impl.Comment;
 import com.mjc.school.repository.interfaces.CommentRepository;
 import com.mjc.school.repository.interfaces.NewsRepository;
 import com.mjc.school.service.BaseService;
-import com.mjc.school.service.dto.CommentDtoRequest;
-import com.mjc.school.service.dto.CommentDtoResponse;
-import com.mjc.school.service.dto.PageDtoResponse;
+import com.mjc.school.service.dto.*;
 import com.mjc.school.service.exceptions.NotFoundException;
 import com.mjc.school.service.exceptions.ResourceConflictServiceException;
 import com.mjc.school.service.interfaces.CommentModelMapper;
 import com.mjc.school.service.validator.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.domain.Page;
@@ -27,7 +24,7 @@ import static com.mjc.school.service.exceptions.ServiceErrorCode.*;
 
 @Service
 public class CommentService implements
-        BaseService<CommentDtoRequest, CommentDtoResponse, Long, Integer, CommentDtoRequest> {
+        BaseService<CommentDtoRequest, CommentDtoResponse, Long, Comment, CommentDtoRequest> {
 
     private final CommentRepository commentRepository;
     private final NewsRepository newsRepository;
@@ -41,14 +38,17 @@ public class CommentService implements
         this.newsRepository = newsRepository;
     }
 
+
     @Override
     @Transactional(readOnly = true)
-    public PageDtoResponse<CommentDtoResponse> readAll(Integer pageNo, Integer pageSize, String sort) {
-        String[] sortParams = sort.split(":");
-        Sort.Direction direction = sortParams[1].equalsIgnoreCase("ASC") ? Sort.Direction.ASC : Sort.Direction.DESC;
-        PageRequest pageRequest = PageRequest.of(pageNo, pageSize, Sort.by(direction, sortParams[0]));
+    public PageDtoResponse<CommentDtoResponse> readAll(ResourceSearchFilterRequestDTO searchFilterRequestDTO, Pageable pageable) {
+        Page<Comment> page;
+        if (searchFilterRequestDTO != null) {
+            page = commentRepository.findAll(getSpecification(searchFilterRequestDTO), pageable);
 
-        Page<Comment> page = commentRepository.findAll(pageRequest);
+        } else {
+            page = commentRepository.findAll(pageable);
+        }
         Page<CommentDtoResponse> result = commentModelMapper.commentPageToDtoPage(page);
         return new PageDtoResponse<>(result.getContent(), result.getPageable().getPageNumber(), result.getTotalPages());
     }

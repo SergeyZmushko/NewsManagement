@@ -5,14 +5,14 @@ import com.mjc.school.repository.model.impl.Role;
 import com.mjc.school.repository.interfaces.RoleRepository;
 import com.mjc.school.service.BaseService;
 import com.mjc.school.service.dto.PageDtoResponse;
+import com.mjc.school.service.dto.ResourceSearchFilterRequestDTO;
 import com.mjc.school.service.dto.RoleDto;
 import com.mjc.school.service.exceptions.NotFoundException;
 import com.mjc.school.service.exceptions.ResourceConflictServiceException;
 import com.mjc.school.service.interfaces.RoleModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,7 +21,7 @@ import java.util.Optional;
 import static com.mjc.school.service.exceptions.ServiceErrorCode.*;
 
 @Service
-public class RoleService implements BaseService<RoleDto, RoleDto, Long, Integer, RoleDto> {
+public class RoleService implements BaseService<RoleDto, RoleDto, Long, Role, RoleDto> {
 
     private final RoleRepository repository;
     private final RoleModelMapper roleModelMapper;
@@ -32,14 +32,17 @@ public class RoleService implements BaseService<RoleDto, RoleDto, Long, Integer,
         this.roleModelMapper = roleModelMapper;
     }
 
+
     @Override
     @Transactional(readOnly = true)
-    public PageDtoResponse<RoleDto> readAll(Integer pageNo, Integer pageSize, String sort) {
-        String[] sortParams = sort.split(":");
-        Sort.Direction direction = sortParams[1].equalsIgnoreCase("ASC") ? Sort.Direction.ASC : Sort.Direction.DESC;
-        PageRequest pageRequest = PageRequest.of(pageNo, pageSize, Sort.by(direction, sortParams[0]));
+    public PageDtoResponse<RoleDto> readAll(ResourceSearchFilterRequestDTO searchFilterRequestDTO, Pageable pageable) {
+        Page<Role> page;
+        if (searchFilterRequestDTO != null) {
+            page = repository.findAll(getSpecification(searchFilterRequestDTO), pageable);
 
-        Page<Role> page = repository.findAll(pageRequest);
+        } else {
+            page = repository.findAll(pageable);
+        }
         Page<RoleDto> result = roleModelMapper.rolePageToDtoPage(page);
         return new PageDtoResponse<>(result.getContent(), result.getPageable().getPageNumber(), result.getTotalPages());
     }

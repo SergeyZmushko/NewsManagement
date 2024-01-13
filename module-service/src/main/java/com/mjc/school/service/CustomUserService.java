@@ -12,7 +12,6 @@ public interface CustomUserService {
     UserDtoResponse findUserModelByUserName(String userName);
     Boolean existsByUserName(String userName);
     Boolean existsByEmail(String email);
-
     UserDtoResponse save(SignUpDtoRequest userModel);
 
 }

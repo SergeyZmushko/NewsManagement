@@ -7,14 +7,14 @@ import com.mjc.school.service.BaseService;
 import com.mjc.school.service.dto.AuthorDtoRequest;
 import com.mjc.school.service.dto.AuthorDtoResponse;
 import com.mjc.school.service.dto.PageDtoResponse;
+import com.mjc.school.service.dto.ResourceSearchFilterRequestDTO;
 import com.mjc.school.service.exceptions.NotFoundException;
 import com.mjc.school.service.exceptions.ResourceConflictServiceException;
 import com.mjc.school.service.interfaces.AuthorModelMapper;
 import com.mjc.school.service.validator.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,10 +24,11 @@ import static com.mjc.school.service.exceptions.ServiceErrorCode.*;
 
 @Service
 public class AuthorService implements
-        BaseService<AuthorDtoRequest, AuthorDtoResponse, Long, Integer, AuthorDtoRequest> {
+        BaseService<AuthorDtoRequest, AuthorDtoResponse, Long, AuthorModel, AuthorDtoRequest> {
 
     private final AuthorRepository authorRepository;
     private final AuthorModelMapper mapper;
+
 
     @Autowired
     public AuthorService(AuthorModelMapper authorModelMapper,
@@ -38,13 +39,14 @@ public class AuthorService implements
 
     @Override
     @Transactional(readOnly = true)
-    public PageDtoResponse<AuthorDtoResponse> readAll(Integer pageNo, Integer pageSize, String sort) {
+    public PageDtoResponse<AuthorDtoResponse> readAll(ResourceSearchFilterRequestDTO searchFilterRequestDTO, Pageable pageable) {
+        Page<AuthorModel> page;
+        if (searchFilterRequestDTO != null) {
+            page = authorRepository.findAll(getSpecification(searchFilterRequestDTO), pageable);
 
-        String[] sortParams = sort.split(":");
-        Sort.Direction direction = sortParams[1].equalsIgnoreCase("ASC") ? Sort.Direction.ASC : Sort.Direction.DESC;
-        PageRequest pageRequest = PageRequest.of(pageNo, pageSize, Sort.by(direction, sortParams[0]));
-
-        Page<AuthorModel> page = authorRepository.findAll(pageRequest);
+        } else {
+            page = authorRepository.findAll(pageable);
+        }
         Page<AuthorDtoResponse> result = mapper.authorPageToDtoPage(page);
         return new PageDtoResponse<>(result.getContent(), result.getPageable().getPageNumber(), result.getTotalPages());
     }
