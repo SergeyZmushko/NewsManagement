@@ -8,4 +8,5 @@ public interface CustomAuthorRepository {
     Optional<AuthorModel> findByName(String name);
 
     Optional<AuthorModel> readByNewsId(Long newsId);
+
 }

@@ -8,6 +8,7 @@ import com.mjc.school.service.dto.UserDtoResponse;
 import com.mjc.school.service.exceptions.NotFoundException;
 import com.mjc.school.service.interfaces.UserModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
@@ -82,7 +83,4 @@ public class UserDetailsService implements org.springframework.security.core.use
     public UserDtoResponse save(SignUpDtoRequest userModel) {
         return mapper.modelToDto(userRepository.save(mapper.dtoToModel(userModel)));
     }
-
-
-
 }

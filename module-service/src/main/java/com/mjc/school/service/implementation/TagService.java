@@ -11,8 +11,7 @@ import com.mjc.school.service.interfaces.TagModelMapper;
 import com.mjc.school.service.validator.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,7 +23,7 @@ import static com.mjc.school.service.exceptions.ServiceErrorCode.TAG_ID_DOES_NOT
 
 @Service
 public class TagService implements
-        BaseService<TagDtoRequest, TagDtoResponse, Long, Integer, TagDtoRequest> {
+        BaseService<TagDtoRequest, TagDtoResponse, Long, TagModel, TagDtoRequest> {
 
     private final TagRepository tagRepository;
     private final TagModelMapper mapper;
@@ -37,12 +36,14 @@ public class TagService implements
 
     @Override
     @Transactional(readOnly = true)
-    public PageDtoResponse<TagDtoResponse> readAll(Integer pageNo, Integer pageSize, String sort) {
-        String[] sortParams = sort.split(":");
-        Sort.Direction direction = sortParams[1].equalsIgnoreCase("ASC") ? Sort.Direction.ASC : Sort.Direction.DESC;
-        PageRequest pageRequest = PageRequest.of(pageNo, pageSize, Sort.by(direction, sortParams[0]));
+    public PageDtoResponse<TagDtoResponse> readAll(ResourceSearchFilterRequestDTO searchFilterRequestDTO, Pageable pageable) {
+        Page<TagModel> page;
+        if (searchFilterRequestDTO != null) {
+            page = tagRepository.findAll(getSpecification(searchFilterRequestDTO), pageable);
 
-        Page<TagModel> page = tagRepository.findAll(pageRequest);
+        } else {
+            page = tagRepository.findAll(pageable);
+        }
         Page<TagDtoResponse> result = mapper.tagPageToDtoPage(page);
         return new PageDtoResponse<>(result.getContent(), result.getPageable().getPageNumber(), result.getTotalPages());
     }

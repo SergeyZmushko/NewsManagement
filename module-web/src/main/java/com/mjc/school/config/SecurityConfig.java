@@ -51,6 +51,7 @@ public class SecurityConfig  {
                 .expressionHandler(customWebSecurityExpressionHandler())
                 .requestMatchers(new AntPathRequestMatcher("/api/**/auth/**")).permitAll()
                 .antMatchers(HttpMethod.GET, BASE_URL + "news", BASE_URL + "news/**").permitAll()
+                .antMatchers(HttpMethod.GET, BASE_URL + "search", BASE_URL + "search/**").permitAll()
 
                 .antMatchers(HttpMethod.POST, BASE_URL + "news", BASE_URL + "comments").hasRole("USER")
                 .antMatchers(HttpMethod.GET, BASE_URL + "comments").hasRole("USER")

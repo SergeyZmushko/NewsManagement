@@ -4,8 +4,8 @@ import com.mjc.school.service.validator.constraint.NotNull;
 import com.mjc.school.service.validator.constraint.Size;
 
 
-public record TagDtoRequest (
-    @NotNull
-    @Size(min = 3, max = 255)
-    String name){
+public record TagDtoRequest(
+        @NotNull
+        @Size(min = 3, max = 255)
+        String name) {
 }
