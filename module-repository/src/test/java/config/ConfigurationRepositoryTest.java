@@ -13,12 +13,13 @@ import org.springframework.transaction.PlatformTransactionManager;
 
 import javax.sql.DataSource;
 
+
 @ContextConfiguration
 @ComponentScan(basePackages = {"com.mjc.school"})
 @PropertySource("classpath:application-test.yaml")
-public class ConfigurationTest {
+public class ConfigurationRepositoryTest {
 
-        @Bean
+    @Bean
     public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
         LocalContainerEntityManagerFactoryBean em
                 = new LocalContainerEntityManagerFactoryBean();

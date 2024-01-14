@@ -16,6 +16,10 @@ public class ResourceSearchFilterRequestDTO {
 
     }
 
+    public void setSearchCriteria(List<String> searchCriteria) {
+        this.searchCriteria = searchCriteria;
+    }
+
     public ResourceSearchFilterRequestDTO(@Nullable List<String> searchCriteria) {
         if (searchCriteria != null) {
             this.searchCriteria = searchCriteria;

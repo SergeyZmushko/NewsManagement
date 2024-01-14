@@ -21,6 +21,7 @@ public class AuthorModel implements BaseEntity<Long> {
     @OneToMany(mappedBy = "authorModel", fetch = FetchType.LAZY)
     private List<NewsModel> news;
 
+
     public List<NewsModel> getNews() {
         return news;
     }
@@ -44,6 +45,11 @@ public class AuthorModel implements BaseEntity<Long> {
     public void setName(String name) {
         this.name = name;
     }
+
+    public AuthorModel() {
+    }
+
+
 
     @Override
     public String toString() {
