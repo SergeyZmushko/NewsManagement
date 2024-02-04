@@ -1,8 +1,8 @@
 package com.mjc.school.service;
 
-import com.mjc.school.repository.filter.specification.SearchCriteria;
-import com.mjc.school.repository.filter.specification.SearchFilterSpecification;
-import com.mjc.school.repository.filter.specification.SearchOperation;
+import com.mjc.school.specification.SearchCriteria;
+import com.mjc.school.specification.SearchFilterSpecification;
+import com.mjc.school.specification.SearchOperation;
 import com.mjc.school.service.dto.PageDtoResponse;
 import com.mjc.school.service.dto.ResourceSearchFilterRequestDTO;
 import org.springframework.data.domain.Pageable;

@@ -1,10 +1,10 @@
 package com.mjc.school.service.interfaces;
 
-import com.mjc.school.repository.model.impl.AuthorModel;
-import com.mjc.school.repository.model.impl.NewsModel;
-import com.mjc.school.repository.interfaces.AuthorRepository;
-import com.mjc.school.repository.interfaces.CommentRepository;
-import com.mjc.school.repository.interfaces.TagRepository;
+import com.mjc.school.model.impl.AuthorModel;
+import com.mjc.school.model.impl.NewsModel;
+import com.mjc.school.interfaces.AuthorRepository;
+import com.mjc.school.interfaces.CommentRepository;
+import com.mjc.school.interfaces.TagRepository;
 import com.mjc.school.service.dto.CommentsDtoForNewsResponse;
 import com.mjc.school.service.dto.CreateNewsDtoRequest;
 import com.mjc.school.service.dto.NewsDtoResponse;

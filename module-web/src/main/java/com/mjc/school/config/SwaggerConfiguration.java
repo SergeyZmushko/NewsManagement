@@ -18,12 +18,14 @@ public class SwaggerConfiguration  {
     @Bean
     public Docket api(){
         return new Docket(DocumentationType.SWAGGER_2)
-                .apiInfo(apiEndPointInfo())
-                .useDefaultResponseMessages(false)
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("com.mjc.school.controller"))
                 .paths(PathSelectors.any())
-                .build();
+                .apis(RequestHandlerSelectors.basePackage("com.mjc.school.controller"))
+                .build()
+                .apiInfo(apiEndPointInfo())
+                .pathMapping("/")
+                .useDefaultResponseMessages(false);
+
     }
 
     public ApiInfo apiEndPointInfo(){

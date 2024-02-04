@@ -1,7 +1,7 @@
 package com.mjc.school.service.interfaces;
 
-import com.mjc.school.repository.model.impl.Comment;
-import com.mjc.school.repository.interfaces.NewsRepository;
+import com.mjc.school.model.impl.Comment;
+import com.mjc.school.interfaces.NewsRepository;
 import com.mjc.school.service.dto.CommentDtoRequest;
 import com.mjc.school.service.dto.CommentDtoResponse;
 import com.mjc.school.service.dto.CommentsDtoForNewsResponse;

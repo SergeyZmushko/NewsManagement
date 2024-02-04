@@ -1,6 +1,6 @@
 package com.mjc.school.service.interfaces;
 
-import com.mjc.school.repository.model.impl.Role;
+import com.mjc.school.model.impl.Role;
 import com.mjc.school.service.dto.RoleDto;
 import org.mapstruct.Mapper;
 import org.springframework.data.domain.Page;

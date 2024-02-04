@@ -1,9 +1,9 @@
 package com.mjc.school.service.implementation;
 
-import com.mjc.school.repository.exception.EntityConflictRepositoryException;
-import com.mjc.school.repository.model.impl.Comment;
-import com.mjc.school.repository.interfaces.CommentRepository;
-import com.mjc.school.repository.interfaces.NewsRepository;
+import com.mjc.school.exception.EntityConflictRepositoryException;
+import com.mjc.school.model.impl.Comment;
+import com.mjc.school.interfaces.CommentRepository;
+import com.mjc.school.interfaces.NewsRepository;
 import com.mjc.school.service.BaseService;
 import com.mjc.school.service.dto.*;
 import com.mjc.school.service.exceptions.NotFoundException;

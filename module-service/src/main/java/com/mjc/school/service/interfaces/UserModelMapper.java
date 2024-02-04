@@ -1,6 +1,6 @@
 package com.mjc.school.service.interfaces;
 
-import com.mjc.school.repository.model.impl.UserModel;
+import com.mjc.school.model.impl.UserModel;
 import com.mjc.school.service.dto.SignUpDtoRequest;
 import com.mjc.school.service.dto.UserDtoResponse;
 import org.mapstruct.Mapper;

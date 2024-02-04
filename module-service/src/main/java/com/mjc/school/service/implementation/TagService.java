@@ -1,8 +1,8 @@
 package com.mjc.school.service.implementation;
 
-import com.mjc.school.repository.exception.EntityConflictRepositoryException;
-import com.mjc.school.repository.model.impl.TagModel;
-import com.mjc.school.repository.interfaces.TagRepository;
+import com.mjc.school.exception.EntityConflictRepositoryException;
+import com.mjc.school.model.impl.TagModel;
+import com.mjc.school.interfaces.TagRepository;
 import com.mjc.school.service.BaseService;
 import com.mjc.school.service.dto.*;
 import com.mjc.school.service.exceptions.NotFoundException;
