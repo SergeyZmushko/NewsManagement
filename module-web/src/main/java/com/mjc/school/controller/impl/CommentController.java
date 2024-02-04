@@ -16,6 +16,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Nullable;
+
 import static com.mjc.school.controller.RestApiConst.COMMENTS_API_ROOT_PATH;
 @ApiVersion()
 @RestController
@@ -39,7 +41,7 @@ public class CommentController implements BaseController<CommentDtoRequest, Comm
             @ApiResponse(code = 404, message = "The resource you were trying to reach is not found"),
             @ApiResponse(code = 500, message = "Application failed to process the request")
     })
-    public PageDtoResponse<CommentDtoResponse> readAll(@RequestBody ResourceSearchFilterRequestDTO requestDTO,
+    public PageDtoResponse<CommentDtoResponse> readAll(@Nullable @RequestBody ResourceSearchFilterRequestDTO requestDTO,
                                                        @PageableDefault(page = 0, size = 10, sort = "id", direction = Sort.Direction.ASC) Pageable pageable) {
         return commentService.readAll(requestDTO, pageable);
     }

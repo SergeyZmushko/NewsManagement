@@ -18,8 +18,7 @@ import java.util.stream.Collectors;
 @Component
 public class JwtUtils {
 
-
-    private String jwtSecret = "5367566B59703373367639792F423F4528482B4D6251655468576D5A71347437";
+    private final String jwtSecret = "5367566B59703373367639792F423F4528482B4D6251655468576D5A71347437";
     private final int jwtExpirationMs = 3600 * 1000;
 
     public String generateToken(Authentication authentication){

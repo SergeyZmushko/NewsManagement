@@ -1,7 +1,7 @@
 package com.mjc.school.service.implementation;
 
-import com.mjc.school.repository.interfaces.UserRepository;
-import com.mjc.school.repository.model.impl.UserModel;
+import com.mjc.school.interfaces.UserRepository;
+import com.mjc.school.model.impl.UserModel;
 import com.mjc.school.service.CustomUserService;
 import com.mjc.school.service.dto.SignUpDtoRequest;
 import com.mjc.school.service.dto.UserDtoResponse;
@@ -25,9 +25,9 @@ public class UserDetailsService implements org.springframework.security.core.use
 
 
     @Autowired
-    public UserDetailsService(UserRepository userRepository, UserModelMapper mapper){
+    public UserDetailsService(UserRepository userRepository, UserModelMapper userModelMapper){
         this.userRepository = userRepository;
-        this.mapper = mapper;
+        this.mapper = userModelMapper;
     }
 
     @Override

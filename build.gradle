@@ -47,12 +47,12 @@ subprojects {
         implementation group: 'org.springframework.boot', name: 'spring-boot-starter-security', version: '2.7.7'
         implementation group: 'org.springframework.security', name: 'spring-security-oauth2-client', version: '5.7.5'
 
+        testImplementation 'org.mockito:mockito-core:3.9.0'
         testImplementation "org.springframework:spring-test:$springVersion"
         testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: '2.7.7'
         testImplementation "org.junit.jupiter:junit-jupiter-api:$jupiterVersion"
         testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$jupiterVersion"
         testImplementation "com.tngtech.archunit:archunit-junit5:1.0.0"
-        testImplementation "org.testcontainers:postgresql:1.19.0"
         testImplementation group: 'org.assertj', name: 'assertj-core', version: '3.24.2'
 
     }

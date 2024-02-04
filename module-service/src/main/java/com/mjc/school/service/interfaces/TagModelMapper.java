@@ -1,6 +1,6 @@
 package com.mjc.school.service.interfaces;
 
-import com.mjc.school.repository.model.impl.TagModel;
+import com.mjc.school.model.impl.TagModel;
 import com.mjc.school.service.dto.TagDtoRequest;
 import com.mjc.school.service.dto.TagDtoResponse;
 import org.mapstruct.Mapper;

@@ -1,8 +1,8 @@
 package com.mjc.school.service.implementation;
 
-import com.mjc.school.repository.exception.EntityConflictRepositoryException;
-import com.mjc.school.repository.model.impl.AuthorModel;
-import com.mjc.school.repository.interfaces.AuthorRepository;
+import com.mjc.school.exception.EntityConflictRepositoryException;
+import com.mjc.school.model.impl.AuthorModel;
+import com.mjc.school.interfaces.AuthorRepository;
 import com.mjc.school.service.BaseService;
 import com.mjc.school.service.dto.AuthorDtoRequest;
 import com.mjc.school.service.dto.AuthorDtoResponse;

@@ -1,10 +1,10 @@
 package servicesMockTests;
 
-import com.mjc.school.repository.interfaces.AuthorRepository;
-import com.mjc.school.repository.interfaces.CommentRepository;
-import com.mjc.school.repository.interfaces.NewsRepository;
-import com.mjc.school.repository.interfaces.TagRepository;
-import com.mjc.school.repository.model.impl.NewsModel;
+import com.mjc.school.interfaces.AuthorRepository;
+import com.mjc.school.interfaces.CommentRepository;
+import com.mjc.school.interfaces.NewsRepository;
+import com.mjc.school.interfaces.TagRepository;
+import com.mjc.school.model.impl.NewsModel;
 import com.mjc.school.service.dto.*;
 import com.mjc.school.service.exceptions.NotFoundException;
 import com.mjc.school.service.implementation.NewsService;

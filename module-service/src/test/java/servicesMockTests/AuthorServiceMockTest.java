@@ -1,7 +1,7 @@
 package servicesMockTests;
 
-import com.mjc.school.repository.interfaces.AuthorRepository;
-import com.mjc.school.repository.model.impl.AuthorModel;
+import com.mjc.school.interfaces.AuthorRepository;
+import com.mjc.school.model.impl.AuthorModel;
 import com.mjc.school.service.dto.AuthorDtoRequest;
 import com.mjc.school.service.dto.AuthorDtoResponse;
 import com.mjc.school.service.exceptions.NotFoundException;
